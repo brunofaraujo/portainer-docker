@@ -30,26 +30,33 @@ sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyring
 echo "Setting permissions on Docker GPG key..."
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-# Step VIII: Install Docker packages
+# Step VIII: Add docker repo
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+
+# Step IX: Install Docker packages
 echo "Installing Docker and related packages..."
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# Step IX: Create 'docker' group if not exists
+# Step X: Create 'docker' group if not exists
 echo "Creating 'docker' group..."
 sudo groupadd docker || echo "Group 'docker' already exists"
 
-# Step X: Add current user to 'docker' group
+# Step XI: Add current user to 'docker' group
 echo "Adding $USER to 'docker' group..."
 sudo usermod -aG docker $USER
 
-# Step XI: Clone the repository
+# Step XII: Clone the repository
 echo "Cloning repository..."
 git clone https://github.com/brunofaraujo/portainer-docker.git portainer
 
-# Step XII: Cd into script directory
+# Step XIII: Cd into script directory
 cd portainer || { echo "Failed to cd into portainer"; exit 1; }
 
-# Step XIII: Run docker compose up
+# Step XIV: Run docker compose up
 echo "Starting Docker Compose..."
 sudo docker compose up -d
 
